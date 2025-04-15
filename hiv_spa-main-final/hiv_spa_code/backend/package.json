@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "hiv_spa"
+  },
+  "author": "Devanshi Shah",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "child_process": "^1.0.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "6.14.2",
+    "mongoose": "^8.12.1",
+    "util": "^0.12.5"
+  },
+  "description": "",
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "nodemon": "^3.1.9"
+  }
+}

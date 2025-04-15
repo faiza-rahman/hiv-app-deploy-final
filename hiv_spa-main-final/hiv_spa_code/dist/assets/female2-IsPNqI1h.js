@@ -1,0 +1,1 @@
+import{j as t,k as n}from"./VTextField-COwlGgki.js";const c=t("v-spacer","div","VSpacer"),o="/api/user",i=async(s,a)=>(await n.post(`${o}/login`,{email:s,password:a})).data,l=async(s,a,e)=>(await n.post(`${o}/signup`,{name:s,email:a,password:e})).data,u="/hiv-spa/assets/female2-vWf6LrCK.png";export{c as V,u as _,i as l,l as s};
