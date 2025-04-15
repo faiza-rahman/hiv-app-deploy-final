@@ -4,7 +4,7 @@ const SymptomLog = require("./model");
 exports.getSymptomLogs = async (req, res) => {
     try {
         const { userId } = req.params;
-        const logs = await SymptomLog.find({ userId }).sort({ date: -1 }).limit(5);
+        const logs = await SymptomLog.find({ userId }).sort({ date: -1 }).limit(7);
         res.json(logs);
     } catch (error) {
         res.status(500).json({ message: error.message });

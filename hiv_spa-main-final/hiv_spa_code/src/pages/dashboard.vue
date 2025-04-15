@@ -805,7 +805,7 @@ export default {
       const dates = [];
       const today = new Date();
       let i = 0;
-      while (dates.length <= 5) {
+      while (dates.length <= 7) {
         const date = new Date(today);
         date.setDate(today.getDate() - i); // Subtract i days from today
         dates.push(this.formatDate(date));
