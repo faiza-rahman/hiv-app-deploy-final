@@ -22,7 +22,10 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello, Express.js Server!</h1>');
 });
 
-
+// Create a route that sends a response when visiting the homepage
+app.get('/api/login', (req, res) => {
+  res.send('<h1>Hello, login.js Server!</h1>');
+});
 /*
 app.get('/login', (req, res) => {
   res.send('This is the login page');
