@@ -52,7 +52,7 @@ export default defineConfig({
     port: 5173, // Change the port to avoid conflict with the backend
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // Backend server URL
+        target: 'https://hiv-app-deploy-final.onrender.com', // Backend server URL
         changeOrigin: true,
       },
     },
