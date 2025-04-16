@@ -3,7 +3,7 @@ module.exports = {
     devServer: {
       proxy: {
         '/api': {
-          target: 'http://localhost:3000', // Backend server URL
+          target: 'https://hiv-app-deploy-final.onrender.com', // Backend server URL
           changeOrigin: true,
         },
       },
