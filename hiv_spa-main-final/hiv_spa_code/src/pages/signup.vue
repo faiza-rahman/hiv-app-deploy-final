@@ -111,7 +111,7 @@
       try {
         const response = await signupUser(this.name, this.email, this.password);
         console.log("signup successful:", response);
-        this.$router.push('/dashboard');
+        this.$router.push('/login');
       } catch (error) {
         console.error("Signup failed:", error);
       }

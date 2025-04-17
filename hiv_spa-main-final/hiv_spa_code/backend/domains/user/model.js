@@ -9,5 +9,13 @@ const UserSchema = new Schema({
     fhirId: String, // store the associated FHIR ID
 });
 
+const fhirPatientSchema = new Schema({
+    fhirId: { type: String, unique: true }, // FHIR ID
+    patientData: Object,
+    assigned: { type: Boolean, default: false }, // whether the patient is assigned to a user
+});
+
+
 const User = mongoose.model("User", UserSchema);
-module.exports = User;
+const FhirPatient = mongoose.model("FhirPatient", fhirPatientSchema);
+module.exports = { User, FhirPatient };

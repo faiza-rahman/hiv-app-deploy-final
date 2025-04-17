@@ -1,60 +1,58 @@
-const User = require("./model");
+const { User, FhirPatient } = require("./model");
 const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
 const { hashData, verifyHashdata } = require("../../utils/hashData");
 const createToken = require("../../utils/createToken");
 const { json } = require("stream/consumers");
 const { extractMedication } = require("../../utils/fhirParser");
 const { addMedication, getMedications } = require("../medication/controller");
 
-const SYNTHEA_PATH = "../synthea"; // path to synthea executable, TODO: change
-const FHIR_SERVER_URL = "http://localhost:5000/fhir/Patient"; // assuming local FHIR storage API
+//const SYNTHEA_PATH = "../synthea"; // path to synthea executable, TODO: change
+//const FHIR_SERVER_URL = "http://localhost:5000/fhir/Patient"; // assuming local FHIR storage API
 
 // generate a new Synthea patient
-const generateSyntheaPatient = async (data) => {
-    return new Promise((resolve, reject) => {
-        console.log("generating patient...");
-        const { name } = data;
-        // split the given name into first and last name
-        const [firstName, lastName] = name.split(" ");
-        console.log("firstName:", firstName);
-        console.log("lastName:", lastName);
-        exec(`cd synthea && ./run_synthea -p 1 --givenname "${firstName}" --surname "${lastName}"`, (error, stdout, stderr) => {
-        //exec('${SYNTHEA_PATH}/run_synthea -p 1', (error, stdout, stderr) => {
-            if (error) {
-                console.error('synthea execution error:', error);
-                return reject(new Error(`Synthea execution failed: ${error.message}`));
-            }
-            console.log('Synthea Output:', stdout);
-            if (stderr) console.warn('Synthea Warning: ${stderr}');
+// const generateSyntheaPatient = async (data) => {
+//     return new Promise((resolve, reject) => {
+//         console.log("generating patient...");
+//         const { name } = data;
+//         // split the given name into first and last name
+//         const [firstName, lastName] = name.split(" ");
+//         console.log("firstName:", firstName);
+//         console.log("lastName:", lastName);
+//         exec(`cd synthea && ./run_synthea -p 1 --givenname "${firstName}" --surname "${lastName}"`, (error, stdout, stderr) => {
+//         //exec('${SYNTHEA_PATH}/run_synthea -p 1', (error, stdout, stderr) => {
+//             if (error) {
+//                 console.error('synthea execution error:', error);
+//                 return reject(new Error(`Synthea execution failed: ${error.message}`));
+//             }
+//             console.log('Synthea Output:', stdout);
+//             if (stderr) console.warn('Synthea Warning: ${stderr}');
 
     
-        // locate the generated patient file
-        const fhirOutputPath = path.join(__dirname, '../../synthea/output/fhir');
-        fs.readdir(fhirOutputPath, (err, files) => {
-            if (err) {
-                return reject(new Error('failed to read synthea output directory'));
-            }
+//         // locate the generated patient file
+//         const fhirOutputPath = path.join(__dirname, '../../synthea/output/fhir');
+//         fs.readdir(fhirOutputPath, (err, files) => {
+//             if (err) {
+//                 return reject(new Error('failed to read synthea output directory'));
+//             }
 
-            const jsonFiles = files.filter((file) => file.endsWith('.json'));
-            if (jsonFiles.length === 0) {
-                return reject(new Error('no JSON files found in synthea output'));
-            }
-            const patientFile = path.join(fhirOutputPath, jsonFiles[0]);
-            fs.readFile(patientFile, "utf8", (err, data) => {
-                if (err) {
-                    return reject(new Error('failed to read patient file'));
-                }
+//             const jsonFiles = files.filter((file) => file.endsWith('.json'));
+//             if (jsonFiles.length === 0) {
+//                 return reject(new Error('no JSON files found in synthea output'));
+//             }
+//             const patientFile = path.join(fhirOutputPath, jsonFiles[0]);
+//             fs.readFile(patientFile, "utf8", (err, data) => {
+//                 if (err) {
+//                     return reject(new Error('failed to read patient file'));
+//                 }
 
-                const fhirData = JSON.parse(data);
-                const fhirPatientId = fhirData.entry[0].resource.id;
-                resolve({ fhirPatientId, fhirData });
-            });
-        });
-    });
-});
-};
+//                 const fhirData = JSON.parse(data);
+//                 const fhirPatientId = fhirData.entry[0].resource.id;
+//                 resolve({ fhirPatientId, fhirData });
+//             });
+//         });
+//     });
+// });
+// };
 
 const authenticateUser = async (data) => {
     try {
@@ -106,17 +104,29 @@ const createNewUser = async (data) => {
         } 
 
         // generate a new synthea patient
-        const { fhirPatientId, patientData } = await generateSyntheaPatient({ name });
+        //const { fhirPatientId, patientData } = await generateSyntheaPatient({ name });
+        const fhirPatient = await FhirPatient.findOneAndUpdate(
+            { assigned: false }, // find an unassigned patient
+            { assigned: true }, // mark it as assigned
+            { new: true } // return the updated document
+        );
+
+        if (!fhirPatient) {
+            throw new Error('No unassigned patient available');
+        }
+        const fhirPatientId = fhirPatient.fhirId;
+        const patientData = fhirPatient.patientData;
         console.log('fhirPatientId:', fhirPatientId);
 
-        // store patient data in MongoDB FHIR server
-        await fetch(FHIR_SERVER_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(patientData),
-        });
+
+        // // store patient data in MongoDB FHIR server
+        // await fetch(FHIR_SERVER_URL, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify(patientData),
+        // });
 
         // hash password for encryption
         const hashedPassword = await hashData(password);
