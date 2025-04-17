@@ -36,8 +36,6 @@ router.post('/signup', async (req, res) => {
             throw Error ('Name must contain only letters');
         } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
             throw Error ('Invalid email');
-        } else if (password.length < 8) {
-            throw Error ('Password must be at least 8 characters');
         } else {
             // good input, create user
             const newUser = await createNewUser({ name, email, password });

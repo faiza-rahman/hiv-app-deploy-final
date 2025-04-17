@@ -26,6 +26,10 @@ app.get('/', (req, res) => {
 app.get('/api/login', (req, res) => {
   res.send('<h1>Hello, login.js Server!</h1>');
 });
+
+app.get('/api/signup', (req, res) => {
+  res.send('<h1>Hello, signup.js Server!</h1>');
+});
 /*
 app.get('/login', (req, res) => {
   res.send('This is the login page');
